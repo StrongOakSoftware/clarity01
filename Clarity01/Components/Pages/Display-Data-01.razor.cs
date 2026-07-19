@@ -1,4 +1,5 @@
 ﻿using Clarity01.Data;
+using Clarity01.Models;
 using Dapper;
 using Microsoft.AspNetCore.Components;
 using Microsoft.EntityFrameworkCore;
@@ -79,31 +80,53 @@ namespace Clarity01.Components.Pages
             EditMode = true;
         }
 
+        private void HandleNewItem()
+        {
+            clickedItem = new Dictionary<string, object>();
+            foreach (var column in columnNames)
+            {
+                clickedItem[column] = null; // Initialize with null or default values
+            }
+
+            clickedItem["Id"] = 0; 
+
+            EditMode = true;
+        }
+
         private async Task HandleValidSubmit() {
             using var context = await DbFactory.CreateDbContextAsync();
             var connection = context.Database.GetDbConnection();
 
-            // 1. Separate the ID from the updates
             int id = clickedItem.Where(kvp => kvp.Key == "Id").Select(kvp => Convert.ToInt32(kvp.Value)).FirstOrDefault();
-            var fieldsToUpdate = clickedItem.Where(kvp => kvp.Key != "Id");
-            
+            var fields = clickedItem.Where(kvp => kvp.Key != "Id");
 
-            // 2. Build the SQL string: "SET Field1 = @Field1, Field2 = @Field2..."
-            var setClause = string.Join(", ", fieldsToUpdate.Select(kvp => $"{kvp.Key} = @{kvp.Key}"));
-            var sql = $"UPDATE Table_1_Data SET {setClause} WHERE Id = @Id";
-
-            // 3. Add parameters dynamically
             var parameters = new DynamicParameters();
-            parameters.Add("Id", id);
-            foreach (var kvp in fieldsToUpdate)
+            string sql;
+
+            if (id == 0)
+            {
+                // INSERT Logic
+                var columns = string.Join(", ", fields.Select(kvp => kvp.Key));
+                var values = string.Join(", ", fields.Select(kvp => $"@{kvp.Key}"));
+                sql = $"INSERT INTO Table_1_Data ({columns}) VALUES ({values})";
+            }
+            else
+            {
+                // UPDATE Logic
+                var setClause = string.Join(", ", fields.Select(kvp => $"{kvp.Key} = @{kvp.Key}"));
+                sql = $"UPDATE Table_1_Data SET {setClause} WHERE Id = @Id";
+                parameters.Add("Id", id);
+            }
+
+            foreach (var kvp in fields)
             {
                 parameters.Add(kvp.Key, kvp.Value);
             }
 
-            // 4. Execute
             await connection.ExecuteAsync(sql, parameters);
             EditMode = false;
 
+            LoadData();
             StateHasChanged();
         }
 
@@ -122,6 +145,10 @@ namespace Clarity01.Components.Pages
             StateHasChanged();
         }
 
+        private async Task CancelEdit() {
+            EditMode = false;
+            StateHasChanged();
+        }
     }
 
 }
