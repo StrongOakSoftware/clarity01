@@ -14,6 +14,9 @@ namespace Clarity01.Components.Pages
     public partial class Display_Data_01
     {
         [Inject] private IDbContextFactory<AppDbContext> DbFactory { get; set; } = default!;
+        [Inject] private NavigationManager NavigationManager { get; set; } = default!;
+        [Parameter] public string? TableName { get; set; }
+        private bool IsValidTableName => !string.IsNullOrEmpty(TableName);
 
         public List<string> columnNames = new List<string>();
         public IEnumerable<dynamic> results = new List<dynamic>();
@@ -28,6 +31,13 @@ namespace Clarity01.Components.Pages
 
         protected override async Task OnInitializedAsync()
         {
+            if (!IsValidTableName)
+            {
+                // Option A: Redirect away
+                NavigationManager.NavigateTo("/error");
+                return;
+            }
+
             await LoadData();
         }
 
@@ -53,7 +63,7 @@ namespace Clarity01.Components.Pages
         private async Task<List<Dictionary<string, object>>> GetRowsAsDictionaries(System.Data.Common.DbConnection connection)
         {
             // Added 'var' here assuming 'results' wasn't declared at the class level
-            var results = await connection.QueryAsync("SELECT * FROM Table_1_Data");
+            var results = await connection.QueryAsync($"SELECT * FROM {TableName}");
             var rowsList = results.ToList();
 
             // 1. Create a list to hold all the row dictionaries
@@ -108,13 +118,13 @@ namespace Clarity01.Components.Pages
                 // INSERT Logic
                 var columns = string.Join(", ", fields.Select(kvp => kvp.Key));
                 var values = string.Join(", ", fields.Select(kvp => $"@{kvp.Key}"));
-                sql = $"INSERT INTO Table_1_Data ({columns}) VALUES ({values})";
+                sql = $"INSERT INTO {TableName} ({columns}) VALUES ({values})";
             }
             else
             {
                 // UPDATE Logic
                 var setClause = string.Join(", ", fields.Select(kvp => $"{kvp.Key} = @{kvp.Key}"));
-                sql = $"UPDATE Table_1_Data SET {setClause} WHERE Id = @Id";
+                sql = $"UPDATE {TableName} SET {setClause} WHERE Id = @Id";
                 parameters.Add("Id", id);
             }
 
