@@ -1,6 +1,10 @@
 ﻿@page "/display-data-01"
+@rendermode InteractiveServer
+
 <h3>Display_Data_01</h3>
 
+
+@clickedItem["Id"]
 
 <table class="styled-table">
     <thead>
@@ -14,7 +18,7 @@
     <tbody>
         @foreach (var row in rowsAsDictionaries)
         {
-            <tr>
+            <tr @onclick="() => HandleRowClick(row)">
                 @foreach (var columnName in columnNames)
                 {
                     <td>@row[columnName]</td>

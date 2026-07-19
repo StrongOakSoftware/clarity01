@@ -1,4 +1,5 @@
 ﻿.styled-table {
+	cursor: pointer;
 	width: 100%;
 	border-collapse: collapse;
 	margin: 25px 0;

@@ -17,6 +17,11 @@ namespace Clarity01.Components.Pages
         public IEnumerable<dynamic> results = new List<dynamic>();
         public List<Dictionary<string, object>> rowsAsDictionaries = new List<Dictionary<string, object>>();
 
+        public Dictionary<string, object>? clickedItem = new Dictionary<string, object>()
+        {
+            { "Id", 0 }
+        };
+
 
         protected override async Task OnInitializedAsync()
         {
@@ -75,7 +80,12 @@ namespace Clarity01.Components.Pages
             // 4. Return the populated list
             return listOfDictionaries;
         }
-
+        private void HandleRowClick(Dictionary<string, object> clickedRow)
+        {
+            // Your logic here
+            // Example: var id = clickedRow["Id"];
+            clickedItem = clickedRow;
+        }
 
     }
 
