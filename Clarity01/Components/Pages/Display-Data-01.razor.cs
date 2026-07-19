@@ -52,7 +52,7 @@ namespace Clarity01.Components.Pages
 
         private async Task<List<string>> GetColumnNames(System.Data.Common.DbConnection connection)
         {
-            var pragmaResults = await connection.QueryAsync("PRAGMA table_info(table_1_data);");
+            var pragmaResults = await connection.QueryAsync($"PRAGMA table_info({TableName});");
 
             // Extract just the 'name' property from each DapperRow
             List<string> columnNames = pragmaResults.Select(row => (string)row.name).ToList();
@@ -147,7 +147,7 @@ namespace Clarity01.Components.Pages
             // 1. Separate the ID from the updates
             int id = clickedItem.Where(kvp => kvp.Key == "Id").Select(kvp => Convert.ToInt32(kvp.Value)).FirstOrDefault();
 
-            var sql = $"DELETE FROM Table_1_Data WHERE Id = @Id";
+            var sql = $"DELETE FROM {TableName} WHERE Id = @Id";
             await connection.ExecuteAsync(sql, new { Id = id });
             EditMode = false;
 
