@@ -43,6 +43,7 @@ else
     }
 
     <h4>@(Convert.ToInt32(clickedItem["Id"]) != 0 ? $"{clickedItem["Id"]}" : "")</h4>
+
     <EditForm Model="@clickedItem" OnValidSubmit="HandleValidSubmit">
         <DataAnnotationsValidator />
         <ValidationSummary />
