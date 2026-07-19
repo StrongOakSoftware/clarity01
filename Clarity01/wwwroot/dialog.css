@@ -1,0 +1,61 @@
+﻿/* The modal container */
+dialog#my-modal {
+	border: none;
+	border-radius: 12px;
+	padding: 0;
+	box-shadow: 0 10px 25px rgba(0, 0, 0, 0.2);
+	width: 90%;
+	max-width: 400px;
+	overflow: hidden;
+	font-family: sans-serif;
+}
+
+	/* The backdrop (the area outside the modal) */
+	dialog#my-modal::backdrop {
+		background-color: rgba(0, 0, 0, 0.5);
+		backdrop-filter: blur(2px);
+	}
+
+	/* Content area */
+	dialog#my-modal p {
+		padding: 24px 24px 16px;
+		margin: 0;
+		font-size: 1.1rem;
+		color: #333;
+	}
+
+/* Actions container */
+.modal-actions {
+	display: flex;
+	justify-content: flex-end;
+	gap: 10px;
+	padding: 16px 24px;
+	background-color: #f9f9f9;
+}
+
+	/* Button styles */
+	.modal-actions button {
+		padding: 8px 16px;
+		border-radius: 6px;
+		border: 1px solid #ccc;
+		cursor: pointer;
+		font-weight: 600;
+		transition: background 0.2s;
+	}
+
+		/* "No" button style */
+		.modal-actions button:first-child {
+			background: white;
+			color: #666;
+		}
+
+		/* "Yes" (Delete) button style */
+		.modal-actions button:last-child {
+			background: #e63946;
+			color: white;
+			border-color: #d62828;
+		}
+
+			.modal-actions button:last-child:hover {
+				background: #d62828;
+			}
