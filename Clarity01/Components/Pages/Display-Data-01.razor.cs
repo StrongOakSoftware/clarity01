@@ -5,6 +5,7 @@ using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Metadata.Internal;
 using SQLitePCL;
 using System.Dynamic;
+using static Microsoft.EntityFrameworkCore.DbLoggerCategory;
 using static Microsoft.EntityFrameworkCore.DbLoggerCategory.Database;
 
 namespace Clarity01.Components.Pages
@@ -21,6 +22,8 @@ namespace Clarity01.Components.Pages
         {
             { "Id", 0 }
         };
+
+        public bool EditMode { get; set; } = false;
 
 
         protected override async Task OnInitializedAsync()
@@ -85,6 +88,36 @@ namespace Clarity01.Components.Pages
             // Your logic here
             // Example: var id = clickedRow["Id"];
             clickedItem = clickedRow;
+            EditMode = true;
+        }
+
+        private async Task HandleValidSubmit() {
+            using var context = await DbFactory.CreateDbContextAsync();
+
+            var connection = context.Database.GetDbConnection();
+
+            // 1. Separate the ID from the updates
+            int id = clickedItem.Where(kvp => kvp.Key == "Id").Select(kvp => Convert.ToInt32(kvp.Value)).FirstOrDefault();
+            var fieldsToUpdate = clickedItem.Where(kvp => kvp.Key != "Id");
+            
+
+            // 2. Build the SQL string: "SET Field1 = @Field1, Field2 = @Field2..."
+            var setClause = string.Join(", ", fieldsToUpdate.Select(kvp => $"{kvp.Key} = @{kvp.Key}"));
+            var sql = $"UPDATE Table_1_Data SET {setClause} WHERE Id = @Id";
+
+            // 3. Add parameters dynamically
+            var parameters = new DynamicParameters();
+            parameters.Add("Id", id);
+            foreach (var kvp in fieldsToUpdate)
+            {
+                parameters.Add(kvp.Key, kvp.Value);
+            }
+
+            // 4. Execute
+            await connection.ExecuteAsync(sql, parameters);
+            EditMode = false;
+
+            StateHasChanged();
         }
 
     }

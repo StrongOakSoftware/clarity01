@@ -6,25 +6,50 @@
 
 @clickedItem["Id"]
 
-<table class="styled-table">
-    <thead>
-        <tr>
+@if (!EditMode)
+{
+    <table class="styled-table">
+        <thead>
+            <tr>
                 @foreach (var columnName in columnNames)
                 {
                     <th>@columnName</th>
                 }
-        </tr>
-    </thead>
-    <tbody>
-        @foreach (var row in rowsAsDictionaries)
-        {
-            <tr @onclick="() => HandleRowClick(row)">
-                @foreach (var columnName in columnNames)
-                {
-                    <td>@row[columnName]</td>
-                }
             </tr>
+        </thead>
+        <tbody>
+            @foreach (var row in rowsAsDictionaries)
+            {
+                <tr @onclick="() => HandleRowClick(row)">
+                    @foreach (var columnName in columnNames)
+                    {
+                        <td>@row[columnName]</td>
+                    }
+                </tr>
+            }
+        </tbody>
+    </table>
+}
+else
+{
+    <EditForm Model="@clickedItem" OnValidSubmit="HandleValidSubmit">
+        <DataAnnotationsValidator />
+        <ValidationSummary />
+        @foreach (var columnName in columnNames)
+        {
+            if (@columnName != "Id")
+            {
+                <div class="form-group">
+                    <label for="@columnName">@columnName</label>
+                    <input id="@columnName"
+                           class="form-control"
+                           value="@clickedItem[columnName]"
+                           @oninput="(e) => clickedItem[columnName] = e.Value.ToString()" />
+                </div>
+            }
         }
-    </tbody>
-</table>
+        <button type="submit" class="btn btn-primary">Save</button>
+        @* <button type="button" class="btn btn-secondary" @onclick="CancelEdit">Cancel</button> *@
+    </EditForm>
+}
 
