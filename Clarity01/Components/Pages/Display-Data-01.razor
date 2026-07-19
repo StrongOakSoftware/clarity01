@@ -32,6 +32,10 @@
 }
 else
 {
+
+    <button type="button" commandfor="my-modal" command="show-modal">
+        Delete Item
+    </button>
     <EditForm Model="@clickedItem" OnValidSubmit="HandleValidSubmit">
         <DataAnnotationsValidator />
         <ValidationSummary />
@@ -53,3 +57,17 @@ else
     </EditForm>
 }
 
+
+
+<dialog id="my-modal">
+    <p>Are you sure you want to proceed?</p>
+    <div class="modal-actions">
+
+        <button type="button" commandfor="my-modal" command="close">
+            No
+        </button>
+        <button type="button" commandfor="my-modal" @onclick="HandleDelete" command="close">
+            Yes
+        </button>
+    </div>
+</dialog>

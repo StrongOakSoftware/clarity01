@@ -25,30 +25,18 @@ namespace Clarity01.Components.Pages
 
         public bool EditMode { get; set; } = false;
 
-
         protected override async Task OnInitializedAsync()
         {
-            // 1. Create a context instance using the factory
-            using var context = await DbFactory.CreateDbContextAsync();
+            await LoadData();
+        }
 
+        private async Task LoadData()
+        {
+            using var context = await DbFactory.CreateDbContextAsync();
             var connection = context.Database.GetDbConnection();
 
             columnNames = await GetColumnNames(connection);
             rowsAsDictionaries = await GetRowsAsDictionaries(connection);
-
-            // 2. Call Dapper on that connection
-
-
-            //var items = new List<string> { "Id", "Field2", "Field3", "Field4" };
-            //var dynamicList = items.Select(item =>
-            //{
-            //    dynamic exp = new ExpandoObject();
-            //        exp.Name = item;                
-            //    return (ExpandoObject)exp;
-            //}).ToList();
-
-            // 2. Load the data asynchronously into your list
-
         }
 
         private async Task<List<string>> GetColumnNames(System.Data.Common.DbConnection connection)
@@ -93,7 +81,6 @@ namespace Clarity01.Components.Pages
 
         private async Task HandleValidSubmit() {
             using var context = await DbFactory.CreateDbContextAsync();
-
             var connection = context.Database.GetDbConnection();
 
             // 1. Separate the ID from the updates
@@ -117,6 +104,21 @@ namespace Clarity01.Components.Pages
             await connection.ExecuteAsync(sql, parameters);
             EditMode = false;
 
+            StateHasChanged();
+        }
+
+        private async Task HandleDelete() {
+            using var context = await DbFactory.CreateDbContextAsync();
+            var connection = context.Database.GetDbConnection();
+
+            // 1. Separate the ID from the updates
+            int id = clickedItem.Where(kvp => kvp.Key == "Id").Select(kvp => Convert.ToInt32(kvp.Value)).FirstOrDefault();
+
+            var sql = $"DELETE FROM Table_1_Data WHERE Id = @Id";
+            await connection.ExecuteAsync(sql, new { Id = id });
+            EditMode = false;
+
+            await LoadData();
             StateHasChanged();
         }
 
