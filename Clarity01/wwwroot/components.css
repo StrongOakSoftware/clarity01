@@ -1,0 +1,42 @@
+﻿.styled-table {
+	width: 100%;
+	border-collapse: collapse;
+	margin: 25px 0;
+	font-family: system-ui, -apple-system, sans-serif;
+	font-size: 0.95em;
+	min-width: 400px;
+	box-shadow: 0 0 20px rgba(0, 0, 0, 0.05);
+	border-radius: 8px 8px 0 0;
+	overflow: hidden; /* Ensures the rounded corners apply to the header */
+}
+
+	.styled-table thead tr {
+		background-color: #2c3e50; /* Dark blue/gray header */
+		color: #ffffff;
+		text-align: left;
+	}
+
+	.styled-table th,
+	.styled-table td {
+		padding: 12px 15px;
+	}
+
+	/* Add a light bottom border to all body rows */
+	.styled-table tbody tr {
+		border-bottom: 1px solid #dddddd;
+	}
+
+		/* Zebra striping for easier reading of long data sets */
+		.styled-table tbody tr:nth-of-type(even) {
+			background-color: #f9f9f9;
+		}
+
+		/* Subtle hover effect to track the mouse */
+		.styled-table tbody tr:hover {
+			background-color: #f1f5f9;
+		}
+
+		/* Thicker border at the very bottom of the table */
+		.styled-table tbody tr:last-of-type {
+			border-bottom: 2px solid #2c3e50;
+		}

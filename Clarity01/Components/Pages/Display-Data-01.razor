@@ -1,0 +1,26 @@
+﻿@page "/display-data-01"
+<h3>Display_Data_01</h3>
+
+
+<table class="styled-table">
+    <thead>
+        <tr>
+                @foreach (var columnName in columnNames)
+                {
+                    <th>@columnName</th>
+                }
+        </tr>
+    </thead>
+    <tbody>
+        @foreach (var row in rowsAsDictionaries)
+        {
+            <tr>
+                @foreach (var columnName in columnNames)
+                {
+                    <td>@row[columnName]</td>
+                }
+            </tr>
+        }
+    </tbody>
+</table>
+
